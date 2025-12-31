@@ -61,7 +61,36 @@ Le portefeuille est constitué de batteries homogènes, caractérisées par les 
 - Barres statistiques : moyenne annuelle et minimum observé pour les deux contraintes.
 
 ## Limites de la modélisation
-- Disponibilité des batteries supposée **indépendante et stationnaire**, alors qu’elle peut présenter saisonnalité et corrélations dans la réalité.  
-- SOC simplifié : **pas de rendement ni de dégradation électrochimique dépendante des cycles**.  
-- FCR modélisée comme une **décharge continue sur 4 heures**, approximation conservative du signal réel.  
-- Les résultats doivent être considérés comme **des ordres de grandeur robustes**, et non comme une prévision opérationnelle détaillée.
+
+Cette modélisation repose sur plusieurs hypothèses simplificatrices qui doivent être prises en compte lors de l’interprétation des résultats :
+
+- **Disponibilité des batteries**  
+  - Hypothèse : chaque batterie est disponible pour la FCR avec une probabilité fixe (70 %) indépendamment des autres et du temps.  
+  - Limite : dans la réalité, la disponibilité peut présenter des **corrélations temporelles** (par exemple plusieurs batteries simultanément sur d’autres marchés) et une **saisonnalité** (variation selon la consommation, la production PV/éolienne ou les périodes de maintenance).  
+  - Impact : le facteur de surdimensionnement nécessaire pourrait être sous-estimé si des périodes prolongées de non-disponibilité se produisent.
+
+- **État de charge (SOC)**  
+  - Hypothèse : SOC initial et évolution sont simplifiés, avec une décharge constante sur la FCR et une recharge calibrée sur les autres marchés.  
+  - Limite : le modèle **ne prend pas en compte** :
+    - le rendement de charge/décharge,
+    - la dégradation cyclique ou thermique des batteries,
+    - la variabilité de SOC due aux cycles réels sur d’autres marchés.  
+  - Impact : cela peut conduire à une **surestimation de la capacité réellement utilisable** sur l’année.
+
+- **Modélisation de la FCR**  
+  - Hypothèse : la FCR est assimilée à une décharge continue pendant 4 heures à puissance nominale.  
+  - Limite : le signal FCR réel est variable et réagit aux fluctuations de fréquence, donc la consommation réelle peut être inférieure ou supérieure à cette approximation.  
+  - Impact : le modèle fournit une estimation **conservative** de la sollicitation énergétique.
+
+- **Interactions multi-marchés**  
+  - Hypothèse : les 30 % de disponibilité restante sont affectés à d’autres marchés, sans modéliser la stratégie de maximisation de revenu ou les contraintes réseau.  
+  - Limite : cela ignore les **interactions dynamiques** entre FCR, aFRR et arbitrage, ainsi que les priorités économiques réelles.  
+  - Impact : la probabilité de succès réelle peut différer selon la stratégie opérationnelle adoptée.
+
+- **Approche probabiliste et Monte Carlo**  
+  - Hypothèse : les simulations sont basées sur des tirages stochastiques indépendants sur 2190 slots.  
+  - Limite : le nombre limité de simulations et l’indépendance des tirages peuvent ne pas capturer certains **événements rares extrêmes** (périodes consécutives de forte indisponibilité).  
+  - Impact : le **facteur de surdimensionnement 1.4–1.6** observé doit être considéré comme un ordre de grandeur robuste plutôt qu’une valeur exacte.
+
+En résumé, le modèle fournit un cadre **robuste pour le dimensionnement probabiliste**, mais ne remplace pas une analyse opérationnelle complète tenant compte de la dynamique multi-marchés, des rendements, de la dégradation et de la saisonnalité.
+
